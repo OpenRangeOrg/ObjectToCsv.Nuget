@@ -61,9 +61,17 @@ public class PersonObject
 using ObjectToCsv;
 
 
-List<PersonObject> users = GetTestObjectList();//get list of any object that you want to convert .
+// Retrieve a list of PersonObject instances to be converted to CSV.
+List<PersonObject> users = GetTestObjectList();
 
-var csvString = CsvUtil.BindCsv<PersonObject>(users); //call library to get csv string 
+// Define a custom date format for DateTime fields in the CSV output.
+string dateFormat = "dddd, dd MMMM yyyy"; // Example: "Monday, 01 January 2024"
+
+// Use the CsvUtil library to convert the list of PersonObjects into a CSV-formatted string.
+// The dateFormat parameter is optional; if not provided, the default format "dd MMMM yyyy" will be used.
+var csvString = CsvUtil.BindCsv<PersonObject>(users, dateFormat);
+
+// csvString now contains the CSV representation of the users list.
 ```
 
 

@@ -6,8 +6,17 @@ namespace ObjectToCsv
 
     public static class Conversion
     {
-        public static string BindCsv<T>(List<T> objects)
+        private static string _dateFormat  = "";
+        /// <summary>
+        /// Converts a list of objects to a CSV-formatted string.
+        /// </summary>
+        /// <typeparam name="T">The type of objects in the list.</typeparam>
+        /// <param name="objects">The list of objects to convert.</param>
+        /// <param name="dateFormat">An optional custom date/time format string. Defaults to "dd MMMM yyyy".</param>
+        /// <returns>The CSV-formatted string representing the object list.</returns>
+        public static string BindCsv<T>(List<T> objects,string dateFormat="")
         {
+            _dateFormat = string.IsNullOrEmpty(dateFormat) ? "dd MMMM yyyy" : dateFormat;
             string csvStr = string.Empty;
             if (objects.Count == 0) return string.Empty;
 
@@ -56,12 +65,16 @@ namespace ObjectToCsv
             properties.ToList().ForEach(p =>
             {
                 var ordinal = p.GetCustomAttributes(typeof(Ordinal), false).FirstOrDefault() as Ordinal;
-                object val = p?.GetValue(model, null);
-                if (p.PropertyType == typeof(string) && val == null)
+                object val = p?.GetValue(model, null); ;
+                if ((p.PropertyType == typeof(DateTime) || p.PropertyType == typeof(DateTime?)) && val != null)
+                {
+                    val = ((DateTime)p?.GetValue(model, null)).ToString(_dateFormat);
+                }
+                else if (p.PropertyType == typeof(string) && val == null)
                 {
                     val = string.Empty;
                 }
-                rowArr[ordinal.Order] = val.ToString();
+                rowArr[ordinal.Order] = val==null ? "": val.ToString();
 
             });
             rowArr.ToList().ForEach(row =>
